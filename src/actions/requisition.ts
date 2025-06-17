@@ -7,8 +7,6 @@ import {
 } from '@/schemas/requisition'
 import { create_requisition, get_all_requisitions, get_requisitions } from '@/services/requisition'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { requisitionItemSchema } from '../schemas/requisition';
 
 export async function createRequisition(
     data: RequisitionFormData & { items: RequisitionItemFormData[] }

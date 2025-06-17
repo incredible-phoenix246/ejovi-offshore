@@ -34,7 +34,6 @@ import {
   requisitionItemSchema,
   type RequisitionItemFormData,
   accountCodeOptions,
-  currencyOptions,
 } from '@/schemas/requisition'
 import { useRequisition } from '@/hooks/use-requisition'
 import BlurImage from '@/components/miscellaneous/blur-image'
