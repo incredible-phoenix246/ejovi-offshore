@@ -47,7 +47,7 @@ interface RequisitionStore {
 
 export const useRequisition = create<RequisitionStore>()(
     devtools(
-        (set, get) => ({
+        (set) => ({
             currentRequisition: null,
             requisitions: [],
             isLoading: false,

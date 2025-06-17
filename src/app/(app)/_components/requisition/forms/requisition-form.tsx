@@ -1,8 +1,8 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
+
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
+// import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Form,
@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-
 import {
   requisitionSchema,
   type RequisitionFormData,
@@ -38,7 +37,7 @@ export function RequisitionForm() {
   const { currentRequisition, updateCurrentRequisition } = useRequisition()
 
   const form = useForm<RequisitionFormData>({
-    resolver: zodResolver(requisitionSchema),
+    resolver: customResolver(requisitionSchema),
     defaultValues: {
       description: currentRequisition?.description || '',
       date_request: currentRequisition?.date_request || new Date(),

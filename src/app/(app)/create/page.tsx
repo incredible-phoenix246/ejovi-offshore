@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 
 // import { useRequisitionStore } from '@/lib/stores/requisition-store'
 // import { createRequisition } from '@/lib/actions/requisition'
@@ -23,7 +23,7 @@ import { RequisitionForm } from '../_components/requisition/forms/requisition-fo
 import { AddRequisitionItemDialog } from '../_components/requisition/forms/add-requisition-item-dialog'
 
 export default function CreateRequisitionPage() {
-  const router = useRouter()
+  // const router = useRouter()
   const {
     currentRequisition,
     setCurrentRequisition,
@@ -161,7 +161,7 @@ export default function CreateRequisitionPage() {
               </Table>
             ) : (
               <div className="py-8 text-center text-gray-500">
-                No items added yet. Click "Add New Item" to get started.
+                No items added yet. Click Add New Item to get started.
               </div>
             )}
 
