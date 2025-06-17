@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "start:prod": "next start --port 1002",
+    "start:prod": "next start --p=1002",
     "lint": "next lint",
     "postinstall": "prisma db push"
   },
