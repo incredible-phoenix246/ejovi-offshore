@@ -40,6 +40,8 @@ import {
   currencyOptions,
 } from '@/schemas/requisition'
 import { useRequisition } from '@/hooks/use-requisition'
+import BlurImage from '@/components/miscellaneous/blur-image'
+import Image from 'next/image'
 
 export function AddRequisitionItemDialog() {
   const [open, setOpen] = useState(false)
@@ -81,20 +83,20 @@ export function AddRequisitionItemDialog() {
           Add New Item
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="font-nunito w-full sm:max-w-xl">
         <DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100">
-              <Package className="h-4 w-4 text-purple-600" />
-            </div>
-            <div>
-              <DialogTitle>Add New Requisition</DialogTitle>
-              <DialogDescription>
-                Use this page to request items or services your department
-                needs.
-              </DialogDescription>
-            </div>
-          </div>
+          <BlurImage
+            src="/icon.png"
+            alt="Requisition Icon"
+            width={48}
+            height={48}
+          />
+          <DialogTitle className="font-jakarta font-bold">
+            Add New Requisition
+          </DialogTitle>
+          <DialogDescription>
+            Use this page to request items or services your department needs.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -123,23 +125,12 @@ export function AddRequisitionItemDialog() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Preferred Vendor (Optional)</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Enter name of vendor" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {vendorOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter item or service name"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -156,7 +147,7 @@ export function AddRequisitionItemDialog() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-[250px]">
                           <SelectValue placeholder="Select Account Code" />
                         </SelectTrigger>
                       </FormControl>
@@ -207,7 +198,7 @@ export function AddRequisitionItemDialog() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-[250px]">
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
@@ -235,9 +226,10 @@ export function AddRequisitionItemDialog() {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-[250px]">
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
@@ -298,6 +290,7 @@ export function AddRequisitionItemDialog() {
                       placeholder="This items are need urgently needed. It's Antares we need it before the upcoming hire inspection."
                       rows={3}
                       {...field}
+                      className="h-[100px] resize-none"
                     />
                   </FormControl>
                   <FormMessage />
@@ -305,17 +298,27 @@ export function AddRequisitionItemDialog() {
               )}
             />
 
-            <DialogFooter>
+            <Image
+              src="/file.png"
+              alt="File Icon"
+              width={518}
+              height={152}
+              className="mb-2"
+              draggable={false}
+            />
+
+            <DialogFooter className="flex">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
+                className="w-full max-w-[253px]"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-purple-600 hover:bg-purple-700"
+                className="w-full max-w-[253px] bg-purple-600 hover:bg-purple-700"
               >
                 Add Item
               </Button>
