@@ -12,8 +12,147 @@ model User {
   email      String   @unique
   password   String
   name       String?
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  requisitions Requisition[]
 
   @@map("users")
+}
+
+model Department {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  requisitions Requisition[]
+
+  @@map("departments")
+}
+
+model Location {
+  id   String @id @default(cuid())
+  name String @unique
+
+  requisitions Requisition[]
+
+  @@map("locations")
+}
+
+model Fleet {
+  id   String @id @default(cuid())
+  name String @unique
+
+  requisitions Requisition[]
+
+  @@map("fleets")
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String @unique
+
+  requisitions Requisition[]
+
+  @@map("categories")
+}
+
+model Vendor {
+  id   String @id @default(cuid())
+  name String @unique
+
+  requisition_items RequisitionItem[]
+
+  @@map("vendors")
+}
+
+model AccountCode {
+  id   String @id @default(cuid())
+  code String @unique
+  name String
+
+  // Relations
+  requisition_items RequisitionItem[]
+
+  @@map("account_codes")
+}
+
+enum RequisitionStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum Currency {
+  USD
+  EUR
+  GBP
+  NGN
+}
+
+enum UnitType {
+  EACH
+  KG
+  LITER
+  METER
+  HOUR
+  DAY
+  PIECE
+}
+
+model Requisition {
+  id           String            @id @default(cuid())
+  rfq_no       String            @unique
+  description  String?
+  status       RequisitionStatus @default(PENDING)
+  date_request DateTime
+  created_at   DateTime          @default(now())
+  updated_at   DateTime          @updatedAt
+
+  // Foreign Keys
+  user_id       String
+  department_id String
+  location_id   String
+  fleet_id      String
+  category_id   String
+
+  // Relations
+  user       User              @relation(fields: [user_id], references: [id])
+  department Department        @relation(fields: [department_id], references: [id])
+  location   Location          @relation(fields: [location_id], references: [id])
+  fleet      Fleet             @relation(fields: [fleet_id], references: [id])
+  category   Category          @relation(fields: [category_id], references: [id])
+  items      RequisitionItem[]
+
+  @@index([user_id])
+  @@index([department_id])
+  @@index([location_id])
+  @@index([fleet_id])
+  @@index([category_id])
+  @@index([status])
+  @@map("requisitions")
+}
+
+model RequisitionItem {
+  id             String   @id @default(cuid())
+  item_service   String
+  quantity       Int
+  unit_type      UnitType
+  unit_price     Decimal  @db.Decimal(10, 2)
+  currency       Currency
+  estimated_cost Decimal  @db.Decimal(10, 2)
+  notes          String?
+
+  requisition_id  String
+  vendor_id       String?
+  account_code_id String
+
+  requisition  Requisition @relation(fields: [requisition_id], references: [id], onDelete: Cascade)
+  vendor       Vendor?     @relation(fields: [vendor_id], references: [id])
+  account_code AccountCode @relation(fields: [account_code_id], references: [id])
+
+  @@index([requisition_id])
+  @@index([vendor_id])
+  @@index([account_code_id])
+  @@map("requisition_items")
 }
