@@ -30,11 +30,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Package } from 'lucide-react'
 import {
   requisitionItemSchema,
   type RequisitionItemFormData,
-  vendorOptions,
   accountCodeOptions,
   unitTypeOptions,
   currencyOptions,
