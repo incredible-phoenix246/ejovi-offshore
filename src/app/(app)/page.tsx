@@ -35,17 +35,6 @@ const HomePage = () => {
         </Button>
       </div>
       <RequisitionTable />
-      <div className="mt-6 flex items-center justify-between">
-        <p className="text-sm text-gray-600">Page 1 of 10</p>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm">
-            Previous
-          </Button>
-          <Button variant="outline" size="sm">
-            Next
-          </Button>
-        </div>
-      </div>
     </div>
   )
 }

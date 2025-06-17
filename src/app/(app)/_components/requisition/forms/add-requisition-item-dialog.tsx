@@ -34,12 +34,12 @@ import {
   requisitionItemSchema,
   type RequisitionItemFormData,
   accountCodeOptions,
-  unitTypeOptions,
   currencyOptions,
 } from '@/schemas/requisition'
 import { useRequisition } from '@/hooks/use-requisition'
 import BlurImage from '@/components/miscellaneous/blur-image'
 import Image from 'next/image'
+import { Currency, UnitType } from '@prisma/client'
 
 export function AddRequisitionItemDialog() {
   const [open, setOpen] = useState(false)
@@ -50,9 +50,9 @@ export function AddRequisitionItemDialog() {
     defaultValues: {
       item_service: '',
       quantity: 1,
-      unit_type: 'EACH',
+      unit_type: UnitType.EACH,
       unit_price: 0,
-      currency: 'NGN',
+      currency: Currency.NGN,
       notes: '',
       vendor: '',
       account_code: '',
@@ -77,9 +77,7 @@ export function AddRequisitionItemDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
-          Add New Item
-        </Button>
+        <Button variant="outline">Add New Item</Button>
       </DialogTrigger>
       <DialogContent className="font-nunito w-full sm:max-w-xl">
         <DialogHeader>
@@ -201,9 +199,9 @@ export function AddRequisitionItemDialog() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {unitTypeOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        {Object.values(UnitType).map((value) => (
+                          <SelectItem key={value} value={value}>
+                            {value}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -232,9 +230,9 @@ export function AddRequisitionItemDialog() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {currencyOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        {Object.values(Currency).map((value) => (
+                          <SelectItem key={value} value={value}>
+                            {value}
                           </SelectItem>
                         ))}
                       </SelectContent>

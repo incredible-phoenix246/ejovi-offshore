@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -13,34 +13,33 @@ import {
 } from '@/components/ui/table'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-// import { useRouter } from 'next/navigation'
 
-// import { useRequisitionStore } from '@/lib/stores/requisition-store'
-// import { createRequisition } from '@/lib/actions/requisition'
 import { toast } from 'sonner'
+import { useRouter } from '@bprogress/next/app'
 import { useRequisition } from '@/hooks/use-requisition'
+import { Currency, UnitType } from '@prisma/client'
+import { createRequisition } from '@/actions/requisition'
 import { RequisitionForm } from '../_components/requisition/forms/requisition-form'
 import { AddRequisitionItemDialog } from '../_components/requisition/forms/add-requisition-item-dialog'
+import { getQueryClient } from '@/lib/get-query-client'
 
 export default function CreateRequisitionPage() {
-  // const router = useRouter()
+  const router = useRouter()
+  const queryClient = getQueryClient()
   const {
     currentRequisition,
     setCurrentRequisition,
     removeItemFromCurrentRequisition,
     clearCurrentRequisition,
-    isSubmitting,
-    setSubmitting,
   } = useRequisition()
 
+  const [isSubmitting, startTransition] = useTransition()
+
   useEffect(() => {
-    // Initialize a new requisition
     setCurrentRequisition({
       date_request: new Date(),
       items: [],
     })
-
-    // Cleanup on unmount
     return () => {
       clearCurrentRequisition()
     }
@@ -48,7 +47,6 @@ export default function CreateRequisitionPage() {
 
   const handleSubmit = async () => {
     if (!currentRequisition) return
-
     if (currentRequisition.items.length === 0) {
       toast.error('Please add at least one item to the requisition')
       return
@@ -64,30 +62,37 @@ export default function CreateRequisitionPage() {
       return
     }
 
-    setSubmitting(true)
-    // try {
-    //   const result = await createRequisition({
-    //     description: currentRequisition.description,
-    //     date_request: currentRequisition.date_request,
-    //     department: currentRequisition.department,
-    //     location: currentRequisition.location,
-    //     fleet: currentRequisition.fleet,
-    //     category: currentRequisition.category,
-    //     items: currentRequisition.items,
-    //   })
-
-    //   if (result.success) {
-    //     toast.success('Requisition created successfully')
-    //     clearCurrentRequisition()
-    //     router.push('/requisitions')
-    //   } else {
-    //     toast.error(result.error || 'Failed to create requisition')
-    //   }
-    // } catch (error) {
-    //   toast.error('An unexpected error occurred')
-    // } finally {
-    //   setSubmitting(false)
-    // }
+    startTransition(async () => {
+      await createRequisition({
+        description: currentRequisition.description,
+        date_request: currentRequisition.date_request,
+        department: currentRequisition.department as string,
+        location: currentRequisition.location as string,
+        fleet: currentRequisition.fleet as string,
+        category: currentRequisition.category as string,
+        items: currentRequisition.items.map((item) => ({
+          ...item,
+          unit_type: item.unit_type as UnitType,
+          currency: item.currency as Currency,
+          account_code: item.account_code as string,
+        })),
+      }).then((res) => {
+        if (res.success) {
+          toast.success('Requisition created successfully', {
+            position: 'top-center',
+            description: res.message,
+          })
+          clearCurrentRequisition()
+          queryClient.invalidateQueries()
+          router.push('/')
+        } else {
+          toast.error('Failed to create requisition', {
+            position: 'top-center',
+            description: res.message,
+          })
+        }
+      })
+    })
   }
 
   const totalEstimatedCost =
@@ -115,55 +120,51 @@ export default function CreateRequisitionPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {currentRequisition?.items &&
-            currentRequisition.items.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-purple-50">
-                    <TableHead>Item or Service</TableHead>
-                    <TableHead>Account Code</TableHead>
-                    <TableHead>Vendor</TableHead>
-                    <TableHead>QTY</TableHead>
-                    <TableHead>Unit Price</TableHead>
-                    <TableHead>Currency</TableHead>
-                    <TableHead>Estimated Cost</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentRequisition.items.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.item_service}</TableCell>
-                      <TableCell>{item.account_code}</TableCell>
-                      <TableCell>{item.vendor || 'N/A'}</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell>
-                        {Number(item.unit_price).toLocaleString()}
-                      </TableCell>
-                      <TableCell>{item.currency}</TableCell>
-                      <TableCell>
-                        {Number(item.estimated_cost).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            removeItemFromCurrentRequisition(index)
-                          }
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="py-8 text-center text-gray-500">
-                No items added yet. Click Add New Item to get started.
-              </div>
-            )}
+            <Table>
+              <TableHeader>
+                <TableRow className="font-jakarta rounded-t-xl bg-[#EBE9FE] hover:bg-[#EBE9FE]">
+                  <TableHead>Item or Service</TableHead>
+                  <TableHead>Account Code</TableHead>
+                  <TableHead>Vendor</TableHead>
+                  <TableHead>QTY</TableHead>
+                  <TableHead>Unit Price</TableHead>
+                  <TableHead>Currency</TableHead>
+                  <TableHead>Estimated Cost</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentRequisition?.items &&
+                currentRequisition.items.length > 0
+                  ? currentRequisition.items.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item.item_service}</TableCell>
+                        <TableCell>{item.account_code}</TableCell>
+                        <TableCell>{item.vendor || 'N/A'}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>
+                          {Number(item.unit_price).toLocaleString()}
+                        </TableCell>
+                        <TableCell>{item.currency}</TableCell>
+                        <TableCell>
+                          {Number(item.estimated_cost).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              removeItemFromCurrentRequisition(index)
+                            }
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : null}
+              </TableBody>
+            </Table>
 
             <AddRequisitionItemDialog />
 

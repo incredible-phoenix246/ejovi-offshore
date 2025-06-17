@@ -243,7 +243,7 @@ export function RequisitionForm() {
                       placeholder="This items are need urgently needed. It's Antares we need it before the upcoming hire inspection"
                       rows={4}
                       {...field}
-                      className="h-[200px] resize-none"
+                      className="h-[100px] resize-none"
                     />
                   </FormControl>
                   <FormMessage />

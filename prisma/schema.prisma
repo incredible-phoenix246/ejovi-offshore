@@ -47,7 +47,7 @@ enum UnitType {
 
 model Requisition {
   id           String            @id @default(cuid())
-  rfq_no       String            @unique
+  number       Int               @default(autoincrement())
   description  String?
   status       RequisitionStatus @default(PENDING)
   date_request DateTime
